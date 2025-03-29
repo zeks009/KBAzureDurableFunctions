@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KBAzureDurableFunctions.Backend", "KBAzureDurableFunctions.Backend\KBAzureDurableFunctions.Backend.csproj", "{ECCA26DF-2510-452F-AD22-99BB2BABBC6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KBAzureDurableFunctions.Frontend", "KBAzureDurableFunctions.Frontend\KBAzureDurableFunctions.Frontend.csproj", "{B0C5322B-BE89-4029-9BE6-315487E60F15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KBAzureDurableFunctions.Shared", "KBAzureDurableFunctions.Shared\KBAzureDurableFunctions.Shared.csproj", "{78F2246A-1744-4F4A-8F2A-85C398062FD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ECCA26DF-2510-452F-AD22-99BB2BABBC6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECCA26DF-2510-452F-AD22-99BB2BABBC6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECCA26DF-2510-452F-AD22-99BB2BABBC6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECCA26DF-2510-452F-AD22-99BB2BABBC6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C5322B-BE89-4029-9BE6-315487E60F15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C5322B-BE89-4029-9BE6-315487E60F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C5322B-BE89-4029-9BE6-315487E60F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C5322B-BE89-4029-9BE6-315487E60F15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F2246A-1744-4F4A-8F2A-85C398062FD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F2246A-1744-4F4A-8F2A-85C398062FD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F2246A-1744-4F4A-8F2A-85C398062FD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F2246A-1744-4F4A-8F2A-85C398062FD8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
