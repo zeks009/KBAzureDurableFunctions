@@ -8,8 +8,7 @@ Content-Type: application/json
 {
   "CustomerId": "36CF7CA7-4BD2-4F67-B6C5-007FDCD12614",
   "Items": [
-    {"MenuItemId": "1b10b09c-6b56-420a-8e79-f6b9be5fe20d", "Quantity": 1},
-    {"MenuItemId": "7e1674e4-abba-4603-80a4-f10686278d7e", "Quantity": 2}
+    {"MenuItemId": "1aa2d10e-74a0-4601-a4b0-a5580e9fd325", "Quantity": 1}
   ]
 }
 

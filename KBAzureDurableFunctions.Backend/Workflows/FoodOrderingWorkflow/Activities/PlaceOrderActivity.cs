@@ -10,7 +10,9 @@ namespace KBAzureDurableFunctions.Backend.Workflows.FoodOrderingWorkflow.Activit
 public class PlaceOrderActivity(RestaurantDbContext db)
 {
     [Function(nameof(PlaceOrderActivity))]
-    public async Task Run([ActivityTrigger] Order order, FunctionContext context)
+    public async Task Run(
+        [ActivityTrigger] Order order, 
+        FunctionContext context)
     {
         db.Orders.Add(order);
         await db.SaveChangesAsync();

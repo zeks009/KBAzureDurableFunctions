@@ -1,12 +1,24 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 
 namespace KBAzureDurableFunctions.Backend.Functions;
 
-public static class NotifyUser
+public class NotifyUser
 {
+    private const string HubName = "messages";
+
+    [Function("negotiate")]
+    public static IActionResult Negotiate(
+        [HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req,
+        [SignalRConnectionInfoInput(HubName = HubName)] SignalRConnectionInfo connectionInfo)
+    {
+        return new OkObjectResult(connectionInfo);
+    }
+    
     [Function("NotifyUser")]
-    [SignalROutput(HubName = "messages", ConnectionStringSetting = "SignalRConnection")]
-    public static SignalRMessageAction Run([ActivityTrigger] string message)
+    [SignalROutput(HubName = HubName)]
+    public SignalRMessageAction Run([ActivityTrigger] string message)
     {
         return new SignalRMessageAction("newMessage")
         {

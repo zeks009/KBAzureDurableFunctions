@@ -21,7 +21,7 @@ Welcome to your new app.
             .Build();
         _hubConnection.On<string>("newMessage", message =>
         {
-
+            Console.WriteLine(message);
         });
         await _hubConnection.StartAsync();
     }

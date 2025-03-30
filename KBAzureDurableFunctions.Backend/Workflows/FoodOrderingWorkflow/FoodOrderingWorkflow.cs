@@ -24,8 +24,10 @@ public class FoodOrderingWorkflow
         ILogger logger = context.CreateReplaySafeLogger(nameof(FoodOrderingWorkflow));
         logger.LogInformation("Food ordering workflow started.");
         
+        using var timeoutCts = new CancellationTokenSource();
+        
         var timeout = context.CurrentUtcDateTime.AddSeconds(FreeOrderTimeout);
-        var timeoutTask = context.CreateTimer(timeout, CancellationToken.None);
+        var timeoutTask = context.CreateTimer(timeout, timeoutCts.Token);
         
         var order = context.GetInput<Order>();
         order.WorkflowId = context.InstanceId;
@@ -73,6 +75,12 @@ public class FoodOrderingWorkflow
             // Order delivered in time. Customer is happy.
             logger.LogInformation("Order delivered in time. Customer is happy.");
             await context.CallActivityAsync(nameof(NotifyUser), "Your order has been delivered. Enjoy your pizza 🍕. Thank you for ordering with us.");
+        }
+
+        if (!timeoutTask.IsCompleted)
+        {
+            // Cancel the timeout task if it's still running.
+            timeoutCts.Cancel();
         }
         
         // Workflow completed.
