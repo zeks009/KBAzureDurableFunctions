@@ -1,0 +1,62 @@
+@page "/order-tracking/{id:guid}"
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject HttpClient HttpClient
+
+<MudContainer Class="my-2" MaxWidth="MaxWidth.Medium">
+    <MudPaper Class="px-4 py-4">
+        <MudStack Row="false" Spacing="4" Justify="Justify.Center">
+            <MudText Typo="Typo.h4">Order Tracking</MudText>
+            <MudTimeline>
+                @foreach (var orderEvent in _orderEvents)
+                {
+                    if (_currentStatus == orderEvent)
+                    {
+                        <MudTimelineItem Color="Color.Primary">
+                            <MudText>@orderEvent</MudText>
+                        </MudTimelineItem>
+                    }
+                    else
+                    {
+                        <MudTimelineItem>
+                            <MudText>@orderEvent</MudText>
+                        </MudTimelineItem>
+                    }
+                }
+            </MudTimeline>
+            <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="ConfirmDelivery" Disabled="!_confirmationReady">Confirm delivery</MudButton>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    HubConnection? _hubConnection;
+    readonly List<string> _orderEvents = new();
+    string? _currentStatus;
+    [Parameter] public Guid Id { get; set; }
+    bool _confirmationReady;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _currentStatus = "Your order has been placed";
+        _orderEvents.Add(_currentStatus);
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("http://localhost:7071/api")
+            .WithAutomaticReconnect()
+            .Build();
+        _hubConnection.On<string>("newMessage", message =>
+        {
+            _currentStatus = message;
+            _orderEvents.Add(_currentStatus);
+            if (message.StartsWith("Your order is on the way")) _confirmationReady = true;
+            StateHasChanged();
+        });
+        await _hubConnection.StartAsync();
+    }
+    
+    async Task ConfirmDelivery()
+    {
+        await HttpClient.PostAsJsonAsync($"api/orders/{Id}/confirm", new {});
+    }
+
+}

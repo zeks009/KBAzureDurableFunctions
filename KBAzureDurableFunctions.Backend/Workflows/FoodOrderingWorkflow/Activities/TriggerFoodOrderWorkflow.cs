@@ -35,6 +35,6 @@ public class TriggerFoodOrderWorkflow
         // See https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-http-api#start-orchestration
         //return await client.CreateCheckStatusResponseAsync(req, instanceId);
 
-        return new OkObjectResult(order.Id);
+        return new OkObjectResult(new{ OrderId = order.Id });
     }
 }

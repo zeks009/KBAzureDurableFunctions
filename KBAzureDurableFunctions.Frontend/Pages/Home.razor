@@ -4,7 +4,6 @@
 @using KBAzureDurableFunctions.Shared.Domain
 @using Microsoft.AspNetCore.SignalR.Client
 
-@inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
 @inject IDispatcher Dispatcher
 
@@ -28,21 +27,10 @@
 </MudContainer>
 
 @code {
-
-    HubConnection? _hubConnection;
     MenuItem[] _menuItems = [];
+    
     protected override async Task OnInitializedAsync()
     {
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:7071/api")
-            .WithAutomaticReconnect()
-            .Build();
-        _hubConnection.On<string>("newMessage", message =>
-        {
-            Console.WriteLine(message);
-        });
-        await _hubConnection.StartAsync();
-
         _menuItems = await HttpClient.GetFromJsonAsync<MenuItem[]>("api/GetMenu") ?? [];
     }
 

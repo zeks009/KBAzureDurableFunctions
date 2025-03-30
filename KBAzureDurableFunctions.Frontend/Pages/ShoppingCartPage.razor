@@ -1,10 +1,15 @@
 @page "/cart"
 @using Fluxor
 @using KBAzureDurableFunctions.Frontend.Store
+@using KBAzureDurableFunctions.Shared.Domain
 
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @inject IState<State> State
+@inject HttpClient HttpClient
+@inject ISnackbar Snackbar
+@inject IDispatcher Dispatcher
+@inject NavigationManager NavigationManager
 
 <MudContainer Class="my-2">
     <MudCard>
@@ -33,7 +38,7 @@
         <MudCardActions Class="d-flex justify-content-end gap-2">
             <MudSpacer />
             <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="Empty">Empty</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@State.Value.Order.IsEmpty">Order</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@State.Value.Order.IsEmpty" OnClick="PlaceOrder">Order</MudButton>
         </MudCardActions>
     </MudCard>
 </MudContainer>
@@ -44,5 +49,31 @@
     {
         State.Value.Order.Clear();
     }
+
+    async Task PlaceOrder()
+    {
+        try
+        {
+            var items = State.Value.Order.Items.GroupBy(x => x.MenuItemId)
+                .Select(x => new OrderItem() { MenuItemId = x.Key, Quantity = x.Sum(item => item.Quantity) })
+                .Where(x => x.Quantity > 0);
+            var order = new Order() { CustomerId = Guid.NewGuid(), Items = items.ToList() };
+            var response = await HttpClient.PostAsJsonAsync("api/orders", order);
+            response.EnsureSuccessStatusCode();
+            Dispatcher.Dispatch(new CreateNewOrderAction());
+            Snackbar.Add("Your order placed successfully", Severity.Success);
+
+            var orderCreatedResponse = (await response.Content.ReadFromJsonAsync<OrderCreatedResponse>())!;
+            
+            NavigationManager.NavigateTo($"/order-tracking/{orderCreatedResponse.OrderId}");
+        }
+        catch
+        {
+            Snackbar.Add("Failed to place order", Severity.Error);
+        }
+        
+    }
+
+    record OrderCreatedResponse(Guid OrderId);
 
 }
