@@ -8,4 +8,7 @@ public class Order
     public string WorkflowId { get; set; }
     
     public int NumberOfItems => Items.Count;
+    public decimal Total => Items.Sum(x => x.MenuItem?.Price * x.Quantity ?? 0);
+    public void Clear() => Items.Clear();
+    public bool IsEmpty => !Items.Any();
 }

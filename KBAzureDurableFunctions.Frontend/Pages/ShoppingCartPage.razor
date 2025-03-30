@@ -9,8 +9,8 @@
 <MudContainer Class="my-2">
     <MudCard>
         <MudCardHeader>
-            <MudText Typo="Typo.body1">
-                Your shopping cart
+            <MudText Typo="Typo.h3">
+                Your order
             </MudText>
         </MudCardHeader>
         <MudCardContent Class="d-flex gap-2 flex-column flex-grow-1">
@@ -23,18 +23,26 @@
                         <MudText Style="font-weight: bold; font-size: 16pt">@($"CHF {item.MenuItem.Price:N2}")</MudText>
                     </div>
                     <MudSpacer />
-                    <MudNumericField T="int" @bind-Value="@item.Quantity" Label="Quantity" Variant="Variant.Text" Class="align-self-start" />
+                    <div class="align-self-start">
+                        <MudNumericField T="int" @bind-Value="@item.Quantity" Label="Quantity" Variant="Variant.Text"/>
+                    </div>
                 </div>
             }
+            <MudText Align="Align.Right" Style="font-size: 24pt; font-weight: bold">CHF @(State.Value.Order.Total.ToString("n2"))</MudText>
         </MudCardContent>
         <MudCardActions Class="d-flex justify-content-end gap-2">
             <MudSpacer />
-            <MudButton Variant="Variant.Outlined" Color="Color.Secondary">Empty</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary">Order</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="Empty">Empty</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@State.Value.Order.IsEmpty">Order</MudButton>
         </MudCardActions>
     </MudCard>
 </MudContainer>
 
 @code {
-    
+
+    private void Empty(MouseEventArgs obj)
+    {
+        State.Value.Order.Clear();
+    }
+
 }
