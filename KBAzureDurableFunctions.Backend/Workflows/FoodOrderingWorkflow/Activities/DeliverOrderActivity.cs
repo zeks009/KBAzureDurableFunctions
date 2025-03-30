@@ -13,6 +13,5 @@ public class DeliverOrderActivity
     {
         var logger = context.GetLogger<FoodOrderingWorkflow>();
         logger.LogInformation("Awaiting for delivery to be completed.");
-        await Task.Delay(new Random().Next(5, 15) * 1000);
     }
 }

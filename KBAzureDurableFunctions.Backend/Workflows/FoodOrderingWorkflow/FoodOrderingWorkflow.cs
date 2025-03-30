@@ -25,13 +25,8 @@ public class FoodOrderingWorkflow
     {
         ILogger logger = context.CreateReplaySafeLogger(nameof(FoodOrderingWorkflow));
         logger.LogInformation("Food ordering workflow started.");
-        
+
         _workflowStartTime = context.CurrentUtcDateTime;
-        
-        using var timeoutCts = new CancellationTokenSource();
-        
-        var timeout = context.CurrentUtcDateTime.AddSeconds(FreeOrderTimeout);
-        var timeoutTask = context.CreateTimer(timeout, timeoutCts.Token);
         
         var order = context.GetInput<Order>();
         order.WorkflowId = context.InstanceId;
@@ -64,27 +59,37 @@ public class FoodOrderingWorkflow
         await context.CallActivityAsync(nameof(NotifyUser), $"Your order is on the way ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
 
         // Wait for the order to be delivered. => This is a HUMAN INTERACTION example. We are waiting for an external order_delivered event.
-        var confirmedTask = context.WaitForExternalEvent<object>("order_delivered", timeoutCts.Token);
-        
-        // Wait for the order to be delivered or for the timeout to be reached. => This is a TIMEOUT pattern example.
-        var outcome = await Task.WhenAny(confirmedTask, timeoutTask);
-        if (outcome == timeoutTask)
+        var elapsedSoFar = (int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds;
+        var remainingTimeout = FreeOrderTimeout - elapsedSoFar;
+        if (remainingTimeout > 0)
         {
-            // Timeout reached. Customer has rewarded the free meal
-            logger.LogInformation($"Timeout reached. Customer has rewarded the free meal ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
-            await context.CallActivityAsync(nameof(NotifyUser), $"You have been rewarded a free meal for your patience \ud83c\udf89. Enjoy your pizza 🍕. ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
+            var timeout = TimeSpan.FromSeconds(remainingTimeout);
+            using var timeoutCts = new CancellationTokenSource();
+            var timeoutTask = context.CreateTimer(timeout, timeoutCts.Token);
+            var confirmedTask = context.WaitForExternalEvent<object>("order_delivered", timeoutCts.Token);
+
+            logger.LogInformation($"Waiting for the order to be delivered or for the timeout of {timeout:ss} sec to be reached.");
+            var outcome = await Task.WhenAny(confirmedTask, timeoutTask);
+            if (outcome == timeoutTask)
+            {
+                logger.LogInformation($"Timeout reached. Customer has rewarded the free meal ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
+                await context.CallActivityAsync(nameof(NotifyUser), $"You have been rewarded a free meal for your patience \ud83c\udf89. Enjoy your pizza 🍕. ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
+            }
+            else
+            {
+                logger.LogInformation("Order delivered in time. Customer is happy.");
+                await context.CallActivityAsync(nameof(NotifyUser), $"Your order has been delivered. Enjoy your pizza 🍕. ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
+            }
+
+            if (!timeoutTask.IsCompleted)
+            {
+                timeoutCts.Cancel();
+            }
         }
         else
         {
-            // Order delivered in time. Customer is happy.
-            logger.LogInformation("Order delivered in time. Customer is happy.");
-            await context.CallActivityAsync(nameof(NotifyUser), $"Your order has been delivered. Enjoy your pizza 🍕. ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
-        }
-
-        if (!timeoutTask.IsCompleted)
-        {
-            // Cancel the timeout task if it's still running.
-            timeoutCts.Cancel();
+            logger.LogInformation($"Timeout reached. Customer has rewarded the free meal ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
+            await context.CallActivityAsync(nameof(NotifyUser), $"You have been rewarded a free meal for your patience \ud83c\udf89. Enjoy your pizza 🍕. ({(int)(context.CurrentUtcDateTime - _workflowStartTime.Value).TotalSeconds} sec).");
         }
         
         // Workflow completed.

@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 
 @inject HttpClient HttpClient
+@inject IConfiguration Configuration
 
 <MudContainer Class="my-2" MaxWidth="MaxWidth.Medium">
     <MudPaper Class="px-4 py-4">
@@ -41,7 +42,7 @@
         _currentStatus = "Your order has been placed";
         _orderEvents.Add(_currentStatus);
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:7071/api")
+            .WithUrl(Configuration["ApiBaseUrl"] + "/api")
             .WithAutomaticReconnect()
             .Build();
         _hubConnection.On<string>("newMessage", message =>
