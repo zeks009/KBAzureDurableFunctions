@@ -1,0 +1,24 @@
+@using Fluxor
+@using KBAzureDurableFunctions.Frontend.Store
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject IState<State> State
+@inject NavigationManager NavigationManager
+
+@if (State.Value.Order.NumberOfItems > 0)
+{
+    <MudBadge Content="@State.Value.Order.NumberOfItems" Overlap="true" Class="mx-2 my-2" Color="Color.Info">
+        <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Style="color: #fff" OnClick="GoToCart"/>
+    </MudBadge>   
+}
+else
+{
+    <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Style="color: #fff" OnClick="GoToCart"/>
+}
+
+@code {
+    void GoToCart()
+    {
+        NavigationManager.NavigateTo("/cart");
+    }
+}

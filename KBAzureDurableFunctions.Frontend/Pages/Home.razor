@@ -1,18 +1,36 @@
 ﻿@page "/"
+@using Fluxor
+@using KBAzureDurableFunctions.Frontend.Store
+@using KBAzureDurableFunctions.Shared.Domain
 @using Microsoft.AspNetCore.SignalR.Client
 
 @inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+@inject IDispatcher Dispatcher
 
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<MudContainer>
+    @foreach (var mi in _menuItems)
+    {
+        <MudCard Class="my-2">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6">@mi.Name</MudText>
+            </MudCardHeader>
+            <MudCardContent Class="d-flex gap-2 align-content-start">
+                <img src="@mi.Image" alt="@mi.Name" style="width: 128px; height: 128px" class="object-cover rounded"/>
+                <div class="d-flex flex-column gap-2 flex-grow-1">
+                    <MudText Typo="Typo.body1">@mi.Description</MudText>
+                    <MudText Style="font-weight: bold; font-size: 16pt">@($"CHF {mi.Price:N2}")</MudText>
+                </div>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="align-self-start" OnClick="@(() => AddItem(mi))">Add</MudButton>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudContainer>
 
 @code {
 
     HubConnection? _hubConnection;
-
+    MenuItem[] _menuItems = [];
     protected override async Task OnInitializedAsync()
     {
         _hubConnection = new HubConnectionBuilder()
@@ -24,6 +42,13 @@ Welcome to your new app.
             Console.WriteLine(message);
         });
         await _hubConnection.StartAsync();
+
+        _menuItems = await HttpClient.GetFromJsonAsync<MenuItem[]>("api/GetMenu") ?? [];
+    }
+
+    void AddItem(MenuItem item)
+    {
+        Dispatcher.Dispatch(new AddItemAction(new OrderItem(){MenuItem = item, MenuItemId = item.Id, Quantity = 1}));
     }
 
 }

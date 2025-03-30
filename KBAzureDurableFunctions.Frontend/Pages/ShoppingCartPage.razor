@@ -1,0 +1,40 @@
+@page "/cart"
+@using Fluxor
+@using KBAzureDurableFunctions.Frontend.Store
+
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@inject IState<State> State
+
+<MudContainer Class="my-2">
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.body1">
+                Your shopping cart
+            </MudText>
+        </MudCardHeader>
+        <MudCardContent Class="d-flex gap-2 flex-column flex-grow-1">
+            @foreach (var item in State.Value.Order.Items)
+            {
+                <div class="d-flex justify-space-between flex-grow-1 gap-4">
+                    <img src="@item.MenuItem!.Image" alt="@item.MenuItem.Name" style="width: 128px; height: 128px" class="object-cover rounded"/>
+                    <div class="d-flex flex-column gap-2">
+                        <MudText Typo="Typo.body1">@item.MenuItem.Description</MudText>
+                        <MudText Style="font-weight: bold; font-size: 16pt">@($"CHF {item.MenuItem.Price:N2}")</MudText>
+                    </div>
+                    <MudSpacer />
+                    <MudNumericField T="int" @bind-Value="@item.Quantity" Label="Quantity" Variant="Variant.Text" Class="align-self-start" />
+                </div>
+            }
+        </MudCardContent>
+        <MudCardActions Class="d-flex justify-content-end gap-2">
+            <MudSpacer />
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary">Empty</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary">Order</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    
+}

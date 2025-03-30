@@ -1,3 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<MudThemeProvider/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+<Fluxor.Blazor.Web.StoreInitializer/>
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Fixed="true">
+        <MudLink Href="/" Style="color: #fff !important; text-decoration: none">microtom Pizzeria</MudLink>
+        <MudSpacer />
+        <ShoppingCart />
+    </MudAppBar>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>

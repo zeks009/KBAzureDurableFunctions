@@ -8,9 +8,10 @@ Content-Type: application/json
 {
   "CustomerId": "36CF7CA7-4BD2-4F67-B6C5-007FDCD12614",
   "Items": [
-    {"MenuItemId": "1aa2d10e-74a0-4601-a4b0-a5580e9fd325", "Quantity": 1}
+    {"MenuItemId": "ea448182-60b6-4f18-932f-40040d85a688", "Quantity": 1},
+    {"MenuItemId": "07387846-b626-42da-aae2-7316cc7758a3", "Quantity": 4}
   ]
 }
 
 ### POST ConfirmOrderDelivered
-POST localhost:7071/api/orders/b8604f77-4d2c-4e2a-8708-5717b78f835d/confirm
+POST localhost:7071/api/orders/637d8036-7698-4335-9cbd-46f62284b04a/confirm
